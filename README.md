@@ -1,3 +1,22 @@
+## Application configuration (Stage 2.3)
+
+NestJS loads `.env` and validates settings before connecting to PostgreSQL.
+Set `POSTGRES_HOST=127.0.0.1` when running NestJS on your Mac. The database
+port, username, password, and name match the Compose settings in `.env.example`.
+`PORT` defaults to 3000 and `NODE_ENV` defaults to `development`.
+
+```bash
+docker compose up -d --wait
+npm run start:dev
+```
+
+TypeORM connects at startup with `synchronize: false` and `migrationsRun: false`.
+No tables are created automatically. Entities and reviewed migrations come next.
+Redis is running locally; application queue integration comes in a later stage.
+
+Run `npm test -- --runInBand` for unit tests. `npm run test:e2e -- --runInBand`
+requires the local PostgreSQL service and valid `.env` credentials.
+
 ## Architecture decisions
 
 - [ADR 001: Local PostgreSQL and Redis with Docker Compose](docs/adr/001-local-development-docker-compose.md)

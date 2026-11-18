@@ -54,9 +54,8 @@ containers. Run NestJS directly on the host during this stage.
 
 ## Verification and follow-up
 
-The Compose configuration has passed validation. Service startup verification was
-blocked by an unavailable Docker engine at the last check and remains pending.
+The Compose configuration has passed validation. On 2026-11-18, both PostgreSQL
+and Redis were confirmed running with healthy Compose status.
 
-Next, verify both services are healthy, then add validated application configuration,
-TypeORM connectivity, and reviewed migrations. Record schema and workflow decisions
+Next, add entities and reviewed migrations. Record schema and workflow decisions
 in separate ADRs as they are agreed.
