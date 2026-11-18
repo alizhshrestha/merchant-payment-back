@@ -1,3 +1,7 @@
+## Architecture decisions
+
+- [ADR 001: Local PostgreSQL and Redis with Docker Compose](docs/adr/001-local-development-docker-compose.md)
+
 ## Local services (Stage 2.2)
 
 Start Docker Desktop, then run:
