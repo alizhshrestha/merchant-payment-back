@@ -1,3 +1,26 @@
+## Local services (Stage 2.2)
+
+Start Docker Desktop, then run:
+
+```bash
+cp .env.example .env # first setup only
+docker compose up -d --wait
+docker compose ps
+```
+
+PostgreSQL 17: `127.0.0.1:5432`, database `merchant_payment`, user `merchant`,
+local password in `.env`. Redis 7: `127.0.0.1:6379`.
+Ports are local-only. Both services have health checks and persistent named
+volumes. Redis uses append-only persistence and `noeviction` for future queues.
+NestJS connections and migrations will be added in later stages.
+
+Use `docker compose stop` to stop services and `docker compose up -d --wait`
+to restart. `docker compose down` removes containers but preserves data;
+adding `-v` deletes the data. PostgreSQL initialization values apply only
+when its data volume is empty.
+
+---
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
