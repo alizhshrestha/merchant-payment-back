@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { databaseOptions } from './database/database-options';
 import { environmentSchema } from './config/environment';
 
 @Module({
@@ -15,18 +16,9 @@ import { environmentSchema } from './config/environment';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.getOrThrow<string>('POSTGRES_HOST'),
-        port: config.getOrThrow<number>('POSTGRES_PORT'),
-        username: config.getOrThrow<string>('POSTGRES_USER'),
-        password: config.getOrThrow<string>('POSTGRES_PASSWORD'),
-        database: config.getOrThrow<string>('POSTGRES_DB'),
-        autoLoadEntities: true,
-        synchronize: false,
-        migrationsRun: false,
+        ...databaseOptions(config),
         retryAttempts: 3,
         retryDelay: 1000,
-        connectTimeoutMS: 5000,
       }),
     }),
   ],

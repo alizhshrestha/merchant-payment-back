@@ -1,3 +1,37 @@
+## Database migrations (Stage 2.4)
+
+Use Node.js 24, install dependencies, configure `.env` from `.env.example`, and start
+Docker services before running these commands from the project root:
+
+```bash
+npm run migration:show
+npm run migration:run
+```
+
+The first migration creates `users`, `merchant_applications`, `risk_reviews`, and
+`audit_logs`. TypeORM also maintains a `migrations` tracking table. Running the
+migration command again applies only pending changes.
+
+For later entity changes, generate a new migration and review its SQL before applying:
+
+```bash
+npm run migration:generate -- src/database/migrations/DescribeChange
+```
+
+`npm run migration:revert` undoes the latest migration. **Reverting the initial
+migration deletes all four tables and their data.** Use a disposable database to
+practice rollback; do not run it against data you need to keep.
+
+```bash
+npm run build
+npm test -- --runInBand
+npm run test:e2e -- --runInBand
+```
+
+Migration integration tests create and delete a uniquely named temporary database.
+The local PostgreSQL user must have CREATE DATABASE permission (the Compose user
+does by default). Tests never revert the application database.
+
 ## Application configuration (Stage 2.3)
 
 NestJS loads `.env` and validates settings before connecting to PostgreSQL.
@@ -11,13 +45,15 @@ npm run start:dev
 ```
 
 TypeORM connects at startup with `synchronize: false` and `migrationsRun: false`.
-No tables are created automatically. Entities and reviewed migrations come next.
+No tables are created automatically. Apply the reviewed migration explicitly before using repositories.
 Redis is running locally; application queue integration comes in a later stage.
 
 Run `npm test -- --runInBand` for unit tests. `npm run test:e2e -- --runInBand`
 requires the local PostgreSQL service and valid `.env` credentials.
 
 ## Architecture decisions
+
+- [ADR 002: Initial database schema and migrations](docs/adr/002-initial-database-schema.md)
 
 - [ADR 001: Local PostgreSQL and Redis with Docker Compose](docs/adr/001-local-development-docker-compose.md)
 
@@ -35,7 +71,7 @@ PostgreSQL 17: `127.0.0.1:5432`, database `merchant_payment`, user `merchant`,
 local password in `.env`. Redis 7: `127.0.0.1:6379`.
 Ports are local-only. Both services have health checks and persistent named
 volumes. Redis uses append-only persistence and `noeviction` for future queues.
-NestJS connections and migrations will be added in later stages.
+NestJS connects to PostgreSQL; apply migrations explicitly using the commands above.
 
 Use `docker compose stop` to stop services and `docker compose up -d --wait`
 to restart. `docker compose down` removes containers but preserves data;

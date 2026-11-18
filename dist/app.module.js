@@ -12,6 +12,7 @@ const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const database_options_1 = require("./database/database-options");
 const environment_1 = require("./config/environment");
 let AppModule = class AppModule {
 };
@@ -27,18 +28,9 @@ exports.AppModule = AppModule = __decorate([
             typeorm_1.TypeOrmModule.forRootAsync({
                 inject: [config_1.ConfigService],
                 useFactory: (config) => ({
-                    type: 'postgres',
-                    host: config.getOrThrow('POSTGRES_HOST'),
-                    port: config.getOrThrow('POSTGRES_PORT'),
-                    username: config.getOrThrow('POSTGRES_USER'),
-                    password: config.getOrThrow('POSTGRES_PASSWORD'),
-                    database: config.getOrThrow('POSTGRES_DB'),
-                    autoLoadEntities: true,
-                    synchronize: false,
-                    migrationsRun: false,
+                    ...(0, database_options_1.databaseOptions)(config),
                     retryAttempts: 3,
                     retryDelay: 1000,
-                    connectTimeoutMS: 5000,
                 }),
             }),
         ],

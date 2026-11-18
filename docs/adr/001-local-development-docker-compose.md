@@ -57,5 +57,6 @@ containers. Run NestJS directly on the host during this stage.
 The Compose configuration has passed validation. On 2026-11-18, both PostgreSQL
 and Redis were confirmed running with healthy Compose status.
 
-Next, add entities and reviewed migrations. Record schema and workflow decisions
-in separate ADRs as they are agreed.
+The initial schema and migration approach are recorded in
+[ADR 002](002-initial-database-schema.md). Workflow decisions will be documented
+as they are agreed.
