@@ -1,3 +1,45 @@
+## Merchant application drafts (Stage 4.1)
+
+All application requests require `Authorization: Bearer <accessToken>`.
+In Postman, use `{{accessToken}}` with the token saved from login.
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| POST | `/applications` | Create a DRAFT (SALES or ADMIN) |
+| GET | `/applications?page=1&limit=20&status=DRAFT` | List visible applications; status is optional |
+| GET | `/applications/:id` | Read a visible application |
+| PATCH | `/applications/:id` | Edit business fields in DRAFT or NEEDS_INFO (owner SALES or ADMIN) |
+
+SALES sees its own applications, REVIEWER sees assigned applications, and ADMIN
+sees all. Reviewer assignment is added in a later stage; an unassigned reviewer
+currently gets an empty list. Inaccessible IDs return 404. Disallowed role actions
+return 403; edits in other states return 409. Invalid input returns 400.
+
+Create an application with this JSON body:
+
+```json
+{
+  "businessName": "Himalayan Coffee",
+  "legalBusinessName": "Himalayan Coffee Pvt Ltd",
+  "businessType": "Retail",
+  "ownerName": "Test Owner",
+  "contactEmail": "owner@example.test",
+  "contactPhone": "+9779800000000",
+  "requestedMonthlyVolume": "250000.50",
+  "currency": "NPR"
+}
+```
+
+Creation returns HTTP 201 and the application, including its `id`. Use that ID
+for read/edit requests. For PATCH, send only the business fields to change, e.g.
+`{ "businessName": "Updated Coffee" }`. Send `contactPhone: null` to clear it.
+Keep amounts as JSON strings; extra decimal places are rejected, not rounded.
+Never send creator, reviewer, status, or version fields—these are server-managed.
+Lists return `{ data, total, page, limit }` with a maximum page size of 100.
+
+Each successful create/update records an audit event atomically. This stage
+requires no additional migration. Submission and background risk processing are next.
+
 ## JWT login (Stage 3.2)
 
 The API requires `JWT_SECRET` in `.env`: 32 random bytes as 64 hexadecimal characters.
@@ -29,7 +71,7 @@ Invalid login input returns 400; incorrect credentials or invalid/missing tokens
 return 401. Login is limited to ten requests per IP per minute (429 after that).
 All routes require authentication unless explicitly marked public; `/` and login
 remain public. A token expires after 15 minutes; log in again to obtain a new one.
-Role-specific authorization is the following stage.
+Application role and ownership rules are described above.
 
 ## Local users and password hashing (Stage 3.1)
 
@@ -109,6 +151,8 @@ Run `npm test -- --runInBand` for unit tests. `npm run test:e2e -- --runInBand`
 requires the local PostgreSQL service and valid `.env` credentials.
 
 ## Architecture decisions
+
+- [ADR 005: Application access and draft writes](docs/adr/005-application-access-and-draft-writes.md)
 
 - [ADR 004: JWT authentication](docs/adr/004-jwt-authentication.md)
 

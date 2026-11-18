@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
+const applications_module_1 = require("./applications/applications.module");
 const auth_module_1 = require("./auth/auth.module");
 const auth_environment_1 = require("./config/auth-environment");
 const common_1 = require("@nestjs/common");
@@ -23,6 +24,7 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             auth_module_1.AuthModule,
+            applications_module_1.ApplicationsModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 validationSchema: environment_1.environmentSchema.concat(auth_environment_1.authEnvironmentSchema),

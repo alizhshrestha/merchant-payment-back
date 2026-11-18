@@ -1,3 +1,4 @@
+import { ApplicationsModule } from './applications/applications.module';
 import { AuthModule } from './auth/auth.module';
 import { authEnvironmentSchema } from './config/auth-environment';
 import { Module } from '@nestjs/common';
@@ -11,6 +12,7 @@ import { environmentSchema } from './config/environment';
 @Module({
   imports: [
     AuthModule,
+    ApplicationsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: environmentSchema.concat(authEnvironmentSchema),

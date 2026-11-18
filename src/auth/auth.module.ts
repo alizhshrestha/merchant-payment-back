@@ -1,3 +1,4 @@
+import { RolesGuard } from './roles.guard';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -43,6 +44,7 @@ import {
     AuthService,
     PasswordService,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })
-export class AuthModule { }
+export class AuthModule {}
