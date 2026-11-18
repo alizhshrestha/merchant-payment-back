@@ -1,3 +1,27 @@
+## Local users and password hashing (Stage 3.1)
+
+Set `SEED_ADMIN_PASSWORD`, `SEED_SALES_PASSWORD`, and `SEED_REVIEWER_PASSWORD`
+in your ignored `.env` file (15–128 characters each). Fresh setups must choose
+these passwords; `.env.example` intentionally leaves them empty. The initial
+local setup has generated passwords saved in `.env`.
+
+```bash
+npm run migration:run
+npm run seed
+```
+
+| Role | Email | Password setting |
+| --- | --- | --- |
+| ADMIN | admin@merchant.local | SEED_ADMIN_PASSWORD |
+| SALES | sales@merchant.local | SEED_SALES_PASSWORD |
+| REVIEWER | reviewer@merchant.local | SEED_REVIEWER_PASSWORD |
+
+The database stores salted scrypt hashes, not plaintext passwords. Seeding only
+works with `NODE_ENV=development` or `test`. Rerunning skips existing accounts;
+it does not reset passwords or change roles. A conflicting role fails the entire
+transaction. Seed passwords are required only for the seed command, not app startup.
+JWT login and route protection will be implemented in the next stage.
+
 ## Database migrations (Stage 2.4)
 
 Use Node.js 24, install dependencies, configure `.env` from `.env.example`, and start
@@ -52,6 +76,8 @@ Run `npm test -- --runInBand` for unit tests. `npm run test:e2e -- --runInBand`
 requires the local PostgreSQL service and valid `.env` credentials.
 
 ## Architecture decisions
+
+- [ADR 003: Password hashing and local seeding](docs/adr/003-password-hashing-and-local-seeding.md)
 
 - [ADR 002: Initial database schema and migrations](docs/adr/002-initial-database-schema.md)
 
