@@ -1,3 +1,36 @@
+## JWT login (Stage 3.2)
+
+The API requires `JWT_SECRET` in `.env`: 32 random bytes as 64 hexadecimal characters.
+A secret is already generated for this local setup. For a fresh setup, generate one
+with `node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"`
+and save it in your ignored `.env`. Never commit the generated secret.
+
+```bash
+npm run migration:run
+npm run seed
+npm run start:dev
+```
+
+In Postman, send `POST http://localhost:3000/auth/login` with a JSON body:
+
+```json
+{
+  "email": "sales@merchant.local",
+  "password": "<your SEED_SALES_PASSWORD from .env>"
+}
+```
+
+A successful login returns HTTP 200 with `accessToken`, `tokenType: "Bearer"`,
+`expiresIn: 900`, and `user` containing only id, name, email and role.
+Copy `accessToken` into Postman's Authorization > Bearer Token field and send
+`GET http://localhost:3000/auth/me` to retrieve the current user.
+
+Invalid login input returns 400; incorrect credentials or invalid/missing tokens
+return 401. Login is limited to ten requests per IP per minute (429 after that).
+All routes require authentication unless explicitly marked public; `/` and login
+remain public. A token expires after 15 minutes; log in again to obtain a new one.
+Role-specific authorization is the following stage.
+
 ## Local users and password hashing (Stage 3.1)
 
 Set `SEED_ADMIN_PASSWORD`, `SEED_SALES_PASSWORD`, and `SEED_REVIEWER_PASSWORD`
@@ -20,7 +53,7 @@ The database stores salted scrypt hashes, not plaintext passwords. Seeding only
 works with `NODE_ENV=development` or `test`. Rerunning skips existing accounts;
 it does not reset passwords or change roles. A conflicting role fails the entire
 transaction. Seed passwords are required only for the seed command, not app startup.
-JWT login and route protection will be implemented in the next stage.
+JWT login and protected routes are available as documented above.
 
 ## Database migrations (Stage 2.4)
 
@@ -76,6 +109,8 @@ Run `npm test -- --runInBand` for unit tests. `npm run test:e2e -- --runInBand`
 requires the local PostgreSQL service and valid `.env` credentials.
 
 ## Architecture decisions
+
+- [ADR 004: JWT authentication](docs/adr/004-jwt-authentication.md)
 
 - [ADR 003: Password hashing and local seeding](docs/adr/003-password-hashing-and-local-seeding.md)
 

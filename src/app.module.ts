@@ -1,3 +1,5 @@
+import { AuthModule } from './auth/auth.module';
+import { authEnvironmentSchema } from './config/auth-environment';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,9 +10,10 @@ import { environmentSchema } from './config/environment';
 
 @Module({
   imports: [
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      validationSchema: environmentSchema,
+      validationSchema: environmentSchema.concat(authEnvironmentSchema),
       validationOptions: { allowUnknown: true, abortEarly: false },
     }),
     TypeOrmModule.forRootAsync({
